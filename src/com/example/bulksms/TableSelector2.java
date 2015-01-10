@@ -70,6 +70,7 @@ public class TableSelector2 extends Activity {
 		groupList = new ArrayList<String>();
 		groupList.add("HP");
 		groupList.add("Dell");
+		
 		groupList.add("Lenovo");
 		groupList.add("Sony");
 		groupList.add("HCL");
