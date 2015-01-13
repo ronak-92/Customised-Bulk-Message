@@ -3,6 +3,7 @@ package com.example.bulksms;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,7 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -43,7 +45,10 @@ public class MainActivity extends Activity {
 			if(resultCode == RESULT_OK){
 				
 				String varName = data.getStringExtra("fullName");
-				input_msg.setText(input_msg.getText().toString()+"$$"+varName+"$$");
+				Log.d("sql", "activity returned");
+				String msg = input_msg.getText().toString()+"$$"+varName+"$$";
+				input_msg.setText(msg);
+				input_msg.setSelection(msg.length());
 			}
 		}
 	}

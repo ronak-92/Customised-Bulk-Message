@@ -39,6 +39,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				childPosition);
 	}
 
+	//added by us, to get the TableName.ColumnName of the clicked item
 	public String getCompleteChildName(int groupPosition, int childPosition){
 		String completeChildName="";
 		completeChildName = laptops.get(groupPosition)+"."+laptopCollections.get(laptops.get(groupPosition)).get(childPosition);
@@ -60,7 +61,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 		TextView item = (TextView) convertView.findViewById(R.id.laptop);
 
-		ImageView delete = (ImageView) convertView.findViewById(R.id.delete);
+		/*ImageView delete = (ImageView) convertView.findViewById(R.id.delete);
 		delete.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -84,7 +85,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				AlertDialog alertDialog = builder.create();
 				alertDialog.show();
 			}
-		});
+		});*/
 
 		item.setText(laptop);
 		return convertView;

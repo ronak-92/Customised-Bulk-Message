@@ -28,10 +28,10 @@ public final class R {
     public static final class id {
         public static final int action_settings=0x7f080006;
         public static final int bn_add_var=0x7f080001;
+        public static final int bn_create_table=0x7f080005;
         public static final int bn_preview=0x7f080002;
-        public static final int delete=0x7f080004;
         public static final int et_input_msg=0x7f080000;
-        public static final int exlv_table_list=0x7f080005;
+        public static final int exlv_table_list=0x7f080004;
         public static final int laptop=0x7f080003;
     }
     public static final class layout {
@@ -47,6 +47,7 @@ public final class R {
         public static final int action_settings=0x7f050002;
         public static final int add_var=0x7f050004;
         public static final int app_name=0x7f050000;
+        public static final int create_table=0x7f050006;
         public static final int hello_world=0x7f050001;
         public static final int input_msg=0x7f050003;
         public static final int view_preview=0x7f050005;

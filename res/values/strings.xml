@@ -7,5 +7,6 @@
     <string name="input_msg">Please enter your message here ...</string>
     <string name="add_var">Add Variable</string>
     <string name="view_preview">View Preview</string>
+    <string name="create_table">Create Table</string>
 
 </resources>

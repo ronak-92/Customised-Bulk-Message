@@ -5,9 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ExpandableListView;
@@ -25,15 +29,35 @@ public class TableSelector2 extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.table_list);
-
 	}
 
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
+
+		Log.d("sql", "first statement");
+		FeedReaderDbHelper mDbHelper = new FeedReaderDbHelper(this);
+		// Gets the data repository in write mode
+		SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+		// Create a new map of values, where column names are the keys
+		ContentValues values = new ContentValues();
+		values.put(BulkMessageContract.IndexTable.COLUMN_NAME_NAME, "Building");
+
+		// Code to insert Group names in Database
+		// Log.d("sql", "before insert statement");
+		// // Insert the new row, returning the primary key value of the new row
+		// long newRowId;
+		// newRowId = db.insert(
+		// BulkMessageContract.IndexTable.TABLE_NAME,
+		// null,
+		// values);
+		//
+		// Log.d("sql", "after insertion step");
+
 		createGroupList();
-		createCollection();
+		//createCollection();
 
 		expListView = (ExpandableListView) findViewById(R.id.exlv_table_list);
 		final ExpandableListAdapter expListAdapter = new ExpandableListAdapter(
@@ -68,52 +92,111 @@ public class TableSelector2 extends Activity {
 
 	private void createGroupList() {
 		groupList = new ArrayList<String>();
-		groupList.add("HP");
-		groupList.add("Dell");
-		
-		groupList.add("Lenovo");
-		groupList.add("Sony");
-		groupList.add("HCL");
-		groupList.add("Samsung");
-	}
-
-	private void createCollection() {
-		// preparing laptops collection(child)
-		String[] hpModels = { "HP Pavilion G6-2014TX", "ProBook HP 4540",
-				"HP Envy 4-1025TX" };
-		String[] hclModels = { "HCL S2101", "HCL L2102", "HCL V2002" };
-		String[] lenovoModels = { "IdeaPad Z Series", "Essential G Series",
-				"ThinkPad X Series", "Ideapad Z Series" };
-		String[] sonyModels = { "VAIO E Series", "VAIO Z Series",
-				"VAIO S Series", "VAIO YB Series" };
-		String[] dellModels = { "Inspiron", "Vostro", "XPS" };
-		String[] samsungModels = { "NP Series", "Series 5", "SF Series" };
-
 		laptopCollection = new LinkedHashMap<String, List<String>>();
+		// groupList.add("Samsung");
 
-		for (String laptop : groupList) {
-			if (laptop.equals("HP")) {
-				loadChild(hpModels);
-			} else if (laptop.equals("Dell"))
-				loadChild(dellModels);
-			else if (laptop.equals("Sony"))
-				loadChild(sonyModels);
-			else if (laptop.equals("HCL"))
-				loadChild(hclModels);
-			else if (laptop.equals("Samsung"))
-				loadChild(samsungModels);
-			else
-				loadChild(lenovoModels);
+		FeedReaderDbHelper mDbHelper = new FeedReaderDbHelper(this);
+		SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-			laptopCollection.put(laptop, childList);
+		// Define a projection that specifies which columns from the database
+		// you will actually use after this query.
+		String[] projection = {
+				BulkMessageContract.IndexTable.COLUMN_NAME_ENTRY_ID,
+				BulkMessageContract.IndexTable.COLUMN_NAME_NAME, };
+
+		// How you want the results sorted in the resulting Cursor
+		String sortOrder = BulkMessageContract.IndexTable.COLUMN_NAME_NAME
+				+ " DESC";
+
+		Cursor cursor = db.query(BulkMessageContract.IndexTable.TABLE_NAME, // The
+																			// table
+																			// to
+																			// query
+				projection, // The columns to return
+				null, // The columns for the WHERE clause
+				null, // The values for the WHERE clause
+				null, // don't group the rows
+				null, // don't filter by row groups
+				sortOrder // The sort order
+				);
+
+		// cursor.moveToFirst();
+		// cursor.moveToPosition(-1);
+		while (cursor.moveToNext()) {
+			String name = cursor
+					.getString(cursor
+							.getColumnIndexOrThrow(BulkMessageContract.IndexTable.COLUMN_NAME_NAME));
+			groupList.add(name);
+			long id = cursor
+					.getLong(cursor
+							.getColumnIndexOrThrow(BulkMessageContract.IndexTable.COLUMN_NAME_ENTRY_ID));
+			//loadChildren("Table_" + id);
+			loadChildren(name);
+			laptopCollection.put(name,childList);
 		}
+		cursor.close();
 	}
 
-	private void loadChild(String[] laptopModels) {
+	private void loadChildren(String tableName) {
+		// TODO Auto-generated method stub
+		FeedReaderDbHelper mDbHelper = new FeedReaderDbHelper(this);
+		SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+		Cursor cursor = db.query(tableName,
+				null,
+				null, // The columns for the WHERE clause
+				null, // The values for the WHERE clause
+				null, // don't group the rows
+				null, // don't filter by row groups
+				null
+				);
+
 		childList = new ArrayList<String>();
-		for (String model : laptopModels)
-			childList.add(model);
+		String columns[] = cursor.getColumnNames();
+		for (String column : columns) {
+			childList.add(column);
+		}
+		cursor.close();
+
 	}
+
+//	private void createCollection() {
+//		// preparing laptops collection(child)
+//		String[] hpModels = { "HP Pavilion G6-2014TX", "ProBook HP 4540",
+//				"HP Envy 4-1025TX" };
+//		String[] hclModels = { "HCL S2101", "HCL L2102", "HCL V2002" };
+//		String[] lenovoModels = { "IdeaPad Z Series", "Essential G Series",
+//				"ThinkPad X Series", "Ideapad Z Series" };
+//		String[] sonyModels = { "VAIO E Series", "VAIO Z Series",
+//				"VAIO S Series", "VAIO YB Series" };
+//		String[] dellModels = { "Inspiron", "Vostro", "XPS" };
+//		String[] samsungModels = { "NP Series", "Series 5", "SF Series" };
+//
+//		laptopCollection = new LinkedHashMap<String, List<String>>();
+//
+//		for (String laptop : groupList) {
+//			if (laptop.equals("HP")) {
+//				loadChild(hpModels);
+//			} else if (laptop.equals("Dell"))
+//				loadChild(dellModels);
+//			else if (laptop.equals("Sony"))
+//				loadChild(sonyModels);
+//			else if (laptop.equals("HCL"))
+//				loadChild(hclModels);
+//			else if (laptop.equals("Samsung"))
+//				loadChild(samsungModels);
+//			else
+//				loadChild(lenovoModels);
+//
+//			laptopCollection.put(laptop, childList);
+//		}
+//	}
+//
+//	private void loadChild(String[] laptopModels) {
+//		childList = new ArrayList<String>();
+//		for (String model : laptopModels)
+//			childList.add(model);
+//	}
 
 	private void setGroupIndicatorToRight() {
 		/* Get the screen width */
